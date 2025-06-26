@@ -3,9 +3,11 @@
 
 #define INT_MAX 2147483647
 #define INT_MIN -2147483648
+
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 typedef struct s_data{
     int number_of_philos;
@@ -28,4 +30,7 @@ typedef struct s_philo{
     long long last_meal_time;
 }t_philo;
 
+
+void print_status(t_philo *philo, const char *msg);
+long long get_time_ms();
 #endif
