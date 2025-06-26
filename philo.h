@@ -5,6 +5,7 @@
 #define INT_MIN -2147483648
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 typedef struct s_data{
     int number_of_philos;
@@ -25,7 +26,6 @@ typedef struct s_philo{
     t_data *data;
     pthread_t thread;
     long long last_meal_time;
-
 }t_philo;
 
 #endif

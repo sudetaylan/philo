@@ -11,12 +11,27 @@ int create_threads()
 
 }
 
-int philo_routines()
+void *philo_routines(void *arg)
 {
-//eat sleep think
-
+//eat  think sleep
+    t_philo *philo;
+    philo = (t_philo *)arg;
+    while(1)
+    {
+        philo_think(philo);
+        philo_take_forks(philo);
+        philo_eat(philo);
+        philo_finish_eating(philo);
+        philo_sleep(philo);
+    }
 }
 
+long long get_time_ms()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
 int arg_control(char **argv)
 {
     int i;
@@ -122,8 +137,8 @@ int init_tphilo(t_data *data, t_philo **philo)
     int i;
 
     i = 0;
-    philo = malloc(sizeof(t_philo) * data->number_of_philos);
-    if(philo == NULL)
+    *philo = malloc(sizeof(t_philo) * data->number_of_philos);
+    if(*philo == NULL)
     {
         //free
         return 0;        
@@ -133,18 +148,21 @@ int init_tphilo(t_data *data, t_philo **philo)
         philo[i]->id = i + 1;
         philo[i]->meals_eaten = 0;
         philo[i]->last_meal_time = 0;
-        philo[i]->data = &data;
+        philo[i]->data = data;
         philo[i]->l_fork = i;
         philo[i]->r_fork = (i + 1) % data->number_of_philos;
         i++;            
     }
     return 1;
 }
+
+
 int main(int argc, char **argv)
 {
+    int i;
     t_data data;
     t_philo *philo;
-
+    i = 0;
     if(argc != 6 && argc != 5)
         return 1;
     if(!arg_control(argv))
@@ -153,5 +171,11 @@ int main(int argc, char **argv)
         return 1;
     if(!init_tphilo(&data, &philo))
         return 1;
+    data.start_time = get_time_ms();
+    while(i < data.number_of_philos)
+    {
+       pthread_create(&philo[i].thread, NULL, philo_routines, &philo[i]);
+       i++;
+    }
 
 }
