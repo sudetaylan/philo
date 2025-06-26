@@ -28,7 +28,7 @@ int arg_control(char **argv)
         j = 0;
         while(argv[i][j])
         {
-            if(argv[i][j] == '-')
+            if(argv[i][j] == '-' && j == 0)
                 j++;
             if(argv[i][j] <= '9' && argv[i][j] >= '0')
                 ;
@@ -43,29 +43,30 @@ int arg_control(char **argv)
 
 int	ft_atoi(const char *str)
 {
-	int	sign;
-	int	res;
+	int         sign;
+	long long	res;
 
 	sign = 1;
 	res = 0;
 	while (*str == '\t' || *str == '\n' || *str == '\v'
 		|| *str == '\f' || *str == '\r' || *str == ' ')
 		str++;
-	if (*str == '-')
+	if (*str == '-' || *str == '+')
 	{
-		sign *= -1;
+        if(*str == '-')
+		    sign *= -1;
 		str++;
 	}
-	else if (*str == '+')
-		str++;
 	if (*str == '-' || *str == '+')
-		return (0);
+		return (-1);
 	while (*str >= '0' && *str <= '9')
 	{
 		res = (res * 10);
 		res = res + (*str - '0');
 		str++;
 	}
+    if((sign == 1 && res > INT_MAX) || (sign == -1 && res < INT_MIN))
+        return (-1);
 	return (res * sign);
 }
 
@@ -74,9 +75,9 @@ int init_tdata(char **argv, t_data *data, int argc)
     int i;
 
     i = 1;
-    while(argv[i])
+    while(i < 5)
     {
-        if(ft_atoi(argv[i]) < 0)
+        if(ft_atoi(argv[i]) <= 0)
             return 0;
         i++;
     }
@@ -84,20 +85,25 @@ int init_tdata(char **argv, t_data *data, int argc)
     data->time_to_die = ft_atoi(argv[2]);
     data->time_to_eat = ft_atoi(argv[3]);
     data->time_to_sleep = ft_atoi(argv[4]);
-    if(argc == 6)
+    if(argc == 6 && ft_atoi(argv[5]) >= 0)
         data->number_of_eat = ft_atoi(argv[5]);
+    if(!init_fork_mutex(data))
+        return 0;
+    return 1;
+}
+int init_fork_mutex(t_data *data)
+{
+    int i;
+
+    i = 0;
     data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philos);
     if(data->forks == NULL)
-    {
-        //free
         return 0;
-    }
     if(pthread_mutex_init(&data->print_lock, NULL) != 0)
     {
         free(data->forks);
         return 0;
     }
-    i = 0;
     while (i < data->number_of_philos) 
     {
         if (pthread_mutex_init(&data->forks[i], NULL) != 0) {
@@ -111,7 +117,6 @@ int init_tdata(char **argv, t_data *data, int argc)
     }
     return 1;
 }
-
 int init_tphilo(t_data *data, t_philo **philo)
 {
     int i;
