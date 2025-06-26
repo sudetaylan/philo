@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 typedef struct s_data{
     int number_of_philos;
@@ -15,9 +16,11 @@ typedef struct s_data{
     int time_to_eat;
     int time_to_sleep;
     int number_of_eat;
+    bool is_ended;// true ise bitti
     long long start_time;
     pthread_mutex_t *forks;
     pthread_mutex_t print_lock;
+    pthread_mutex_t is_ended_lock;
 }t_data;
 
 typedef struct s_philo{

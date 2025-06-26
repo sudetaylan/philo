@@ -1,31 +1,36 @@
 #include "philo.h"
 
-int create_philos()
-{
-
-}
-
-
-int create_threads()
-{
-
-}
-
 void *philo_routines(void *arg)
 {
-//eat  think sleep
     t_philo *philo;
+    long long time;
+
     philo = (t_philo *)arg;
-    while(1)
+    while(!(philo->data->is_ended))
     {
-        philo_think(philo);
-        philo_take_forks(philo);
-        philo_eat(philo);
-        philo_finish_eating(philo);
-        philo_sleep(philo);
+        time = get_time_ms() - philo->last_meal_time;
+        if(time < (philo->data->time_to_die))
+        {
+            if(philo->data->number_of_eat >= 0 && philo->meals_eaten == philo->data->number_of_eat)
+                end_condition(philo, "All philosophers have eaten enough!");//--
+            philo_think(philo);
+            philo_take_forks(philo);
+            philo_eat(philo);
+            philo_finish_eating(philo);
+            philo_sleep(philo);            
+        }
+        else
+            end_condition(philo, "died");
     }
 }
 
+void   end_condition(t_philo *philo, const char *msg)
+{
+    print_status(philo, msg);
+    pthread_mutex_lock(&philo->data->is_ended_lock);
+    philo->data->is_ended=true;
+    pthread_mutex_unlock(&philo->data->is_ended_lock);
+}
 long long get_time_ms()
 {
     struct timeval tv;
@@ -96,16 +101,22 @@ int init_tdata(char **argv, t_data *data, int argc)
             return 0;
         i++;
     }
+    data->is_ended = false;
     data->number_of_philos = ft_atoi(argv[1]);
     data->time_to_die = ft_atoi(argv[2]);
     data->time_to_eat = ft_atoi(argv[3]);
     data->time_to_sleep = ft_atoi(argv[4]);
     if(argc == 6 && ft_atoi(argv[5]) >= 0)
         data->number_of_eat = ft_atoi(argv[5]);
+    else
+        data->number_of_eat = -1;
     if(!init_fork_mutex(data))
+        return 0;
+    if(pthread_mutex_init(&data->is_ended_lock, NULL) != 0)
         return 0;
     return 1;
 }
+
 int init_fork_mutex(t_data *data)
 {
     int i;
@@ -145,12 +156,12 @@ int init_tphilo(t_data *data, t_philo **philo)
     }
     while(i < data->number_of_philos)
     {
-        philo[i]->id = i + 1;
-        philo[i]->meals_eaten = 0;
-        philo[i]->last_meal_time = 0;
-        philo[i]->data = data;
-        philo[i]->l_fork = i;
-        philo[i]->r_fork = (i + 1) % data->number_of_philos;
+        (*philo)[i].id = i + 1;
+        (*philo)[i].meals_eaten = 0;
+        (*philo)[i].last_meal_time = 0;
+        (*philo)[i].data = data;
+        (*philo)[i].l_fork = i;
+        (*philo)[i].r_fork = (i + 1) % data->number_of_philos;
         i++;            
     }
     return 1;
@@ -177,5 +188,10 @@ int main(int argc, char **argv)
        pthread_create(&philo[i].thread, NULL, philo_routines, &philo[i]);
        i++;
     }
-
+    while(i < data.number_of_philos)
+    {
+        pthread_join(&philo[i].thread, NULL);
+        i++;
+    }
+    //destroy_and_free();
 }
