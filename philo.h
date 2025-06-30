@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef struct s_data{
     int number_of_philos;
@@ -30,10 +31,25 @@ typedef struct s_philo{
     int l_fork;
     t_data *data;
     pthread_t thread;
+    pthread_mutex_t meal_lock;
     long long last_meal_time;
 }t_philo;
 
-
+void *philo_routines(void *arg);
+int arg_control(char **argv);
 void print_status(t_philo *philo, const char *msg);
+void destroy_mutex(t_data *data, t_philo **philo);
+void   end_condition(t_data *data,t_philo *philo, const char *msg);
 long long get_time_ms();
+int	ft_atoi(const char *str);
+int init_tdata(char **argv, t_data *data, int argc);
+int init_fork_mutex(t_data *data);
+int init_tphilo(t_data *data, t_philo **philo);
+void philo_think(t_philo *philo);
+void philo_eat(t_philo *philo);
+void philo_take_forks(t_philo *philo);
+void philo_drop_forks(t_philo *philo);
+void philo_sleep(t_philo *philo);
+void monitor_philos(t_data *data, t_philo *philo);
+
 #endif

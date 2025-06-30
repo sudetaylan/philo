@@ -2,15 +2,20 @@
 
 void philo_think(t_philo *philo)
 {
-    print_status(philo, "is thinking");
+    if(!philo->data->is_ended)
+        print_status(philo, "is thinking");
 }
 void philo_eat(t_philo *philo)
 {
-
-    philo->last_meal_time = get_time_ms();
-    usleep((philo->data->time_to_eat) * 1000);
-    (philo->meals_eaten)++;
-    print_status(philo, "is eating");
+    if(!philo->data->is_ended)
+    {
+        pthread_mutex_lock(&philo->meal_lock);
+        philo->last_meal_time = get_time_ms();
+        (philo->meals_eaten)++;
+        pthread_mutex_unlock(&philo->meal_lock);
+        print_status(philo, "is eating");
+        usleep((philo->data->time_to_eat) * 1000);        
+    }
 }
 
 void philo_take_forks(t_philo *philo)
@@ -20,19 +25,22 @@ void philo_take_forks(t_philo *philo)
 
     right= philo->r_fork;
     left= philo->l_fork;
-    if(right > left)
+    if(!philo->data->is_ended)
     {
-        pthread_mutex_lock(&(philo->data->forks[left]));
-        print_status(philo, "has taken a fork");
-        pthread_mutex_lock(&(philo->data->forks[right]));
-        print_status(philo, "has taken a fork");
-    }
-    else if(left > right)
-    {
-        pthread_mutex_lock(&(philo->data->forks[right]));
-        print_status(philo, "has taken a fork");
-        pthread_mutex_lock(&(philo->data->forks[left]));
-        print_status(philo, "has taken a fork");
+        if(right > left)
+        {
+            pthread_mutex_lock(&(philo->data->forks[left]));
+            print_status(philo, "has taken a fork");
+            pthread_mutex_lock(&(philo->data->forks[right]));
+            print_status(philo, "has taken a fork");
+        }
+        else if(left > right)
+        {
+            pthread_mutex_lock(&(philo->data->forks[right]));
+            print_status(philo, "has taken a fork");
+            pthread_mutex_lock(&(philo->data->forks[left]));
+            print_status(philo, "has taken a fork");
+        }
     }
 }
 void philo_drop_forks(t_philo *philo)
@@ -42,25 +50,30 @@ void philo_drop_forks(t_philo *philo)
 
     right= philo->r_fork;
     left= philo->l_fork;
-    if(right > left)
+    if(!philo->data->is_ended)
     {
-        pthread_mutex_unlock(&(philo->data->forks[right]));
-        print_status(philo, "has dropped a fork");
-        pthread_mutex_unlock(&(philo->data->forks[left]));
-        print_status(philo, "has dropped a fork");
-    }
-    else if(left > right)
-    {
-        pthread_mutex_unlock(&(philo->data->forks[left]));
-        print_status(philo, "has dropped a fork");
-        pthread_mutex_unlock(&(philo->data->forks[right]));
-        print_status(philo, "has dropped a fork");
+        if(right > left)
+        {
+            pthread_mutex_unlock(&(philo->data->forks[right]));
+            print_status(philo, "has dropped a fork");
+            pthread_mutex_unlock(&(philo->data->forks[left]));
+            print_status(philo, "has dropped a fork");
+        }
+        else if(left > right)
+        {
+            pthread_mutex_unlock(&(philo->data->forks[left]));
+            print_status(philo, "has dropped a fork");
+            pthread_mutex_unlock(&(philo->data->forks[right]));
+            print_status(philo, "has dropped a fork");
+        }
     }
 }
 
 void philo_sleep(t_philo *philo)
-{
-    usleep((philo->data->time_to_sleep) * 1000);
-    print_status(philo, "is sleeping");
-
+{   
+    if(!philo->data->is_ended)
+    {
+        print_status(philo, "is sleeping");
+        usleep((philo->data->time_to_sleep) * 1000);
+    }
 }
