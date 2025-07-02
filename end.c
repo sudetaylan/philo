@@ -23,17 +23,9 @@ void destroy_mutex(t_data *data, t_philo *philo)
 }
 void   end_condition(t_data *data, t_philo *philo, const char *msg)
 {
-    int i;
-
-    i = 0;
     pthread_mutex_lock(&philo->data->is_ended_lock);
     data->is_ended = 1;
     pthread_mutex_unlock(&philo->data->is_ended_lock);
-    while(i < data->number_of_philos)
-    {
-        pthread_mutex_unlock(&data->forks[i]);
-        i++;
-    }
     pthread_mutex_lock(&data->print_lock);
     printf("%lld %d %s\n", get_time_ms() - philo->phi_start_time, philo->id, msg);
     pthread_mutex_unlock(&(data->print_lock));

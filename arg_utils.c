@@ -49,6 +49,8 @@ int	ft_atoi(const char *str)
 		str++;
 	}
     if((sign == 1 && res > INT_MAX) || (sign == -1 && res < INT_MIN))
-        return (-1);
+    {
+        return (-1);        
+    }
 	return (res * sign);
 }
