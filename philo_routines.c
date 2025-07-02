@@ -22,6 +22,13 @@ void philo_eat(t_philo *philo)
 
 void philo_take_forks(t_philo *philo)
 {
+    if(philo->data->number_of_philos == 1)
+    {
+	    pthread_mutex_lock(&(philo->data->forks[philo->l_fork]));
+	    print_status(philo, "has taken a fork");
+        end_condition(philo->data, philo, "died");
+        return;        
+    }
 	pthread_mutex_lock(&(philo->data->forks[philo->l_fork]));
 	print_status(philo, "has taken a fork");
     if(check_sim_ended(philo->data))
