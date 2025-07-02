@@ -1,6 +1,6 @@
 #include "philo.h"
 
-static int is_same(const char *msg, const char *died_msg)
+/*static int is_same(const char *msg, const char *died_msg)
 {
     int i;
 
@@ -12,22 +12,13 @@ static int is_same(const char *msg, const char *died_msg)
         i++;
     }
     return 1;
-}
+}*/
 void print_status(t_philo *philo, const char *msg)
 {
-    long long time;
     pthread_mutex_lock(&(philo->data->print_lock));
-    time = get_time_ms() - philo->data->start_time;
-    if(!philo->data->is_ended)
-        printf("%lld %d %s\n", time, philo->id, msg);
+    if(!check_sim_ended(philo->data))
+        printf("%lld %d %s\n", get_time_ms() - philo->data->start_time, philo->id, msg);
     pthread_mutex_unlock(&(philo->data->print_lock));
-    pthread_mutex_lock(&philo->data->is_ended_lock);
-    if (philo->data->is_ended && (is_same(msg, "died") == 1 || is_same(msg, "All philosophers have eaten enough!")))
-    {
-        pthread_mutex_unlock(&philo->data->is_ended_lock);
-        return;
-    }
-    pthread_mutex_unlock(&philo->data->is_ended_lock);
 }
 
 void destroy_mutex(t_data *data, t_philo **philo)
@@ -56,7 +47,7 @@ void   end_condition(t_data *data, t_philo *philo, const char *msg)
 
     i = 0;
     pthread_mutex_lock(&philo->data->is_ended_lock);
-    data->is_ended = true;
+    data->is_ended = 1;
     pthread_mutex_unlock(&philo->data->is_ended_lock);
     while(i < data->number_of_philos)
     {
@@ -74,7 +65,30 @@ long long get_time_ms()
     gettimeofday(&tv, NULL);
     return((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
+int check_sim_ended(t_data *data)
+{
+    pthread_mutex_lock(&data->is_ended_lock);
+    int status = data->is_ended;
+    pthread_mutex_unlock(&data->is_ended_lock);
+    return status;
+}
+void    safe_usleep(long long duration_ms, t_data *data)
+{
+    long long start_time;
 
+    start_time = get_time_ms();
+    while (get_time_ms() - start_time < duration_ms)
+    {
+        pthread_mutex_lock(&data->is_ended_lock);
+        if (data->is_ended)
+        {
+            pthread_mutex_unlock(&data->is_ended_lock);
+            return;
+        }
+        pthread_mutex_unlock(&data->is_ended_lock);
+        usleep(50);
+    }
+}
 int	ft_atoi(const char *str)
 {
 	int         sign;

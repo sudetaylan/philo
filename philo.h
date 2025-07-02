@@ -17,7 +17,7 @@ typedef struct s_data{
     int time_to_eat;
     int time_to_sleep;
     int number_of_eat;
-    bool is_ended;// true ise bitti
+    int is_ended;// true ise bitti
     long long start_time;
     pthread_mutex_t *forks;
     pthread_mutex_t print_lock;
@@ -50,6 +50,8 @@ void philo_eat(t_philo *philo);
 void philo_take_forks(t_philo *philo);
 void philo_drop_forks(t_philo *philo);
 void philo_sleep(t_philo *philo);
-void monitor_philos(t_data *data, t_philo *philo);
+void *monitor_philos(void *arg);
+void    safe_usleep(long long duration_ms, t_data *data);
+int check_sim_ended(t_data *data);
 
 #endif

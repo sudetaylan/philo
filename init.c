@@ -11,7 +11,7 @@ int init_tdata(char **argv, t_data *data, int argc)
             return 0;
         i++;
     }
-    data->is_ended = false;
+    data->is_ended = 0;
     data->number_of_philos = ft_atoi(argv[1]);
     data->time_to_die = ft_atoi(argv[2]);
     data->time_to_eat = ft_atoi(argv[3]);
@@ -46,7 +46,6 @@ int init_fork_mutex(t_data *data)
             while (--i >= 0)
                 pthread_mutex_destroy(&data->forks[i]);
             pthread_mutex_destroy(&data->print_lock);
-            pthread_mutex_destroy(&data->is_ended_lock);
             free(data->forks);
             return 0;
         }
@@ -80,13 +79,17 @@ int init_tphilo(t_data *data, t_philo **philo)
     return 1;
 }
 
-void monitor_philos(t_data *data, t_philo *philo)
+void *monitor_philos(void *arg)
 {
     int i;
     int eat_flag;
+    t_philo *philo;
+    t_data *data;
 
+    philo = (t_philo *)arg;
+    data = philo[0].data;
     i = 0;
-    while(!data->is_ended)
+    while(!check_sim_ended(data))
     {
         i = 0;
         while(i < data->number_of_philos)
@@ -96,7 +99,7 @@ void monitor_philos(t_data *data, t_philo *philo)
             {
                 end_condition(data, &philo[i], "died");
                 pthread_mutex_unlock(&philo[i].meal_lock);
-                return;
+                return NULL;
             }
             pthread_mutex_unlock(&philo[i].meal_lock);
             i++;
@@ -118,9 +121,10 @@ void monitor_philos(t_data *data, t_philo *philo)
             if(eat_flag == 1)
             {
                 end_condition(data, &philo[0] ,"All philosophers have eaten enough!");
-                return;             
+                return NULL;             
             }            
         }
         usleep(1000);
     }
+    return NULL;
 }
