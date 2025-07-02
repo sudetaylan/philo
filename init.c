@@ -72,6 +72,7 @@ int init_tphilo(t_data *data, t_philo **philo)
         (*philo)[i].meals_eaten = 0;
         (*philo)[i].last_meal_time = 0;
         (*philo)[i].data = data;
+        (*philo)[i].phi_start_time = get_time_ms();
         (*philo)[i].l_fork = i;
         (*philo)[i].r_fork = (i + 1) % data->number_of_philos;
         i++;            
@@ -124,7 +125,6 @@ void *monitor_philos(void *arg)
                 return NULL;             
             }            
         }
-        usleep(1000);
     }
     return NULL;
 }

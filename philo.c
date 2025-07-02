@@ -5,8 +5,9 @@ void *philo_routines(void *arg)
     t_philo *philo;
 
     philo = (t_philo *)arg;
+    set_last_meal_time(philo);
     if (philo->id % 2 != 0)
-        safe_usleep(1, philo->data);
+        usleep(200);
     while(!check_sim_ended(philo->data))
     {
         philo_take_forks(philo);
@@ -62,8 +63,6 @@ int main(int argc, char **argv)
         return 1;
     while(i < data.number_of_philos)
     {
-        data.start_time = get_time_ms();
-        philo[i].last_meal_time = data.start_time;
         pthread_create(&philo[i].thread, NULL, philo_routines, &philo[i]);
         i++;
     }

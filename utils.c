@@ -1,23 +1,17 @@
 #include "philo.h"
 
-/*static int is_same(const char *msg, const char *died_msg)
+void	set_last_meal_time(t_philo *philo)
 {
-    int i;
-
-    i = 0;
-    while(msg[i] && died_msg[i])
-    {
-        if(msg[i] != died_msg[i])
-            return 0;
-        i++;
-    }
-    return 1;
-}*/
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->last_meal_time = get_time_ms();
+    philo->phi_start_time = get_time_ms();
+	pthread_mutex_unlock(&philo->meal_lock);
+}
 void print_status(t_philo *philo, const char *msg)
 {
     pthread_mutex_lock(&(philo->data->print_lock));
     if(!check_sim_ended(philo->data))
-        printf("%lld %d %s\n", get_time_ms() - philo->data->start_time, philo->id, msg);
+        printf("%lld %d %s\n", get_time_ms() - philo->phi_start_time, philo->id, msg);
     pthread_mutex_unlock(&(philo->data->print_lock));
 }
 
@@ -55,7 +49,7 @@ void   end_condition(t_data *data, t_philo *philo, const char *msg)
         i++;
     }
     pthread_mutex_lock(&data->print_lock);
-    printf("%lld %d %s\n", get_time_ms() - philo->data->start_time, philo->id, msg);
+    printf("%lld %d %s\n", get_time_ms() - philo->phi_start_time, philo->id, msg);
     pthread_mutex_unlock(&(data->print_lock));
 }
 
