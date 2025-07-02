@@ -28,28 +28,10 @@ void philo_take_forks(t_philo *philo)
 }
 void philo_drop_forks(t_philo *philo)
 {
-    int right;
-    int left;
-
-    right= philo->r_fork;
-    left= philo->l_fork;
-    if(!philo->data->is_ended)
-    {
-        if(right > left)
-        {
-            pthread_mutex_unlock(&(philo->data->forks[right]));
-            print_status(philo, "has dropped a fork");
-            pthread_mutex_unlock(&(philo->data->forks[left]));
-            print_status(philo, "has dropped a fork");
-        }
-        else if(left > right)
-        {
-            pthread_mutex_unlock(&(philo->data->forks[left]));
-            print_status(philo, "has dropped a fork");
-            pthread_mutex_unlock(&(philo->data->forks[right]));
-            print_status(philo, "has dropped a fork");
-        }
-    }
+    pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
+    print_status(philo, "has dropped a fork");
+    pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
+    print_status(philo, "has dropped a fork");
 }
 
 void philo_sleep(t_philo *philo)
