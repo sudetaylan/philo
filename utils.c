@@ -18,10 +18,11 @@ void print_status(t_philo *philo, const char *msg)
     long long time;
     pthread_mutex_lock(&(philo->data->print_lock));
     time = get_time_ms() - philo->data->start_time;
-    printf("%lld %d %s\n", time, philo->id, msg);
+    if(!philo->data->is_ended)
+        printf("%lld %d %s\n", time, philo->id, msg);
     pthread_mutex_unlock(&(philo->data->print_lock));
     pthread_mutex_lock(&philo->data->is_ended_lock);
-    if (philo->data->is_ended && is_same(msg, "died") == 1)
+    if (philo->data->is_ended && (is_same(msg, "died") == 1 || is_same(msg, "All philosophers have eaten enough!")))
     {
         pthread_mutex_unlock(&philo->data->is_ended_lock);
         return;
@@ -51,10 +52,20 @@ void destroy_mutex(t_data *data, t_philo **philo)
 }
 void   end_condition(t_data *data, t_philo *philo, const char *msg)
 {
+    int i;
+
+    i = 0;
     pthread_mutex_lock(&philo->data->is_ended_lock);
     data->is_ended = true;
     pthread_mutex_unlock(&philo->data->is_ended_lock);
-    print_status(philo, msg);
+    while(i < data->number_of_philos)
+    {
+        pthread_mutex_unlock(&data->forks[i]);
+        i++;
+    }
+    pthread_mutex_lock(&data->print_lock);
+    printf("%lld %d %s\n", get_time_ms() - philo->data->start_time, philo->id, msg);
+    pthread_mutex_unlock(&(data->print_lock));
 }
 
 long long get_time_ms()

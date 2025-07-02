@@ -5,13 +5,15 @@ void *philo_routines(void *arg)
     t_philo *philo;
 
     philo = (t_philo *)arg;
+    if(philo->id % 2)
+        usleep(15000);
     while(!(philo->data->is_ended))
     {
-        philo_think(philo);
         philo_take_forks(philo);
         philo_eat(philo);
         philo_drop_forks(philo);
-        philo_sleep(philo);            
+        philo_sleep(philo);
+        philo_think(philo);
     }
     return NULL;
 }
