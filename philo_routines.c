@@ -15,6 +15,8 @@ void philo_eat(t_philo *philo)
         pthread_mutex_unlock(&philo->meal_lock);
         print_status(philo, "is eating");
         safe_usleep(philo->data->time_to_eat, philo->data);
+        pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
+        pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
     }
 }
 
@@ -29,14 +31,6 @@ void philo_take_forks(t_philo *philo)
     }
 	pthread_mutex_lock(&(philo->data->forks[philo->r_fork]));
 	print_status(philo, "has taken a fork");
-}
-
-void philo_drop_forks(t_philo *philo)
-{
-    pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
-    print_status(philo, "has dropped a fork");
-    pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
-    print_status(philo, "has dropped a fork");
 }
 
 void philo_sleep(t_philo *philo)

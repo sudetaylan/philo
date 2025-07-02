@@ -80,51 +80,24 @@ int init_tphilo(t_data *data, t_philo **philo)
     return 1;
 }
 
-void *monitor_philos(void *arg)
+void handle_threads(t_data *data, t_philo *philo)
 {
+    pthread_t monitoring;
     int i;
-    int eat_flag;
-    t_philo *philo;
-    t_data *data;
 
-    philo = (t_philo *)arg;
-    data = philo[0].data;
     i = 0;
-    while(!check_sim_ended(data))
+    while(i < data->number_of_philos)
     {
-        i = 0;
-        while(i < data->number_of_philos)
-        {
-            pthread_mutex_lock(&philo[i].meal_lock);
-            if(get_time_ms() - philo[i].last_meal_time >= data->time_to_die)
-            {
-                end_condition(data, &philo[i], "died");
-                pthread_mutex_unlock(&philo[i].meal_lock);
-                return NULL;
-            }
-            pthread_mutex_unlock(&philo[i].meal_lock);
-            i++;
-        }
-        if(data->number_of_eat > 0)
-        {
-            i = 0;
-            eat_flag = 1;        
-            while(i < data->number_of_philos)
-            {
-                pthread_mutex_lock(&philo[i].meal_lock);
-                if(philo[i].meals_eaten < philo[i].data->number_of_eat)
-                    eat_flag = 0;
-                pthread_mutex_unlock(&philo[i].meal_lock);
-                if(!eat_flag)
-                    break;
-                i++;
-            }
-            if(eat_flag == 1)
-            {
-                end_condition(data, &philo[0] ,"All philosophers have eaten enough!");
-                return NULL;             
-            }            
-        }
+        pthread_create(&philo[i].thread, NULL, philo_routines, &philo[i]);
+        i++;
     }
-    return NULL;
+    pthread_create(&monitoring, NULL, monitor_philos, philo);
+    i = 0;
+    while(i < data->number_of_philos)
+    {
+        pthread_join(philo[i].thread, NULL);
+        i++;
+    }
+    pthread_join(monitoring, NULL);
 }
+

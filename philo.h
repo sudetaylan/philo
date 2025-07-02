@@ -39,7 +39,6 @@ typedef struct s_philo{
 void *philo_routines(void *arg);
 int arg_control(char **argv);
 void print_status(t_philo *philo, const char *msg);
-void destroy_mutex(t_data *data, t_philo **philo);
 void   end_condition(t_data *data,t_philo *philo, const char *msg);
 long long get_time_ms();
 int	ft_atoi(const char *str);
@@ -49,11 +48,12 @@ int init_tphilo(t_data *data, t_philo **philo);
 void philo_think(t_philo *philo);
 void philo_eat(t_philo *philo);
 void philo_take_forks(t_philo *philo);
-void philo_drop_forks(t_philo *philo);
 void philo_sleep(t_philo *philo);
 void *monitor_philos(void *arg);
 void    safe_usleep(long long duration_ms, t_data *data);
 int check_sim_ended(t_data *data);
 void	set_last_meal_time(t_philo *philo);
+void handle_threads(t_data *data, t_philo *philo);
+void destroy_mutex(t_data *data, t_philo *philo);
 
 #endif

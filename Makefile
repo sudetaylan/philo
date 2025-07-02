@@ -1,7 +1,10 @@
-SRCS	=	philo_routines.c \
-			philo.c \
+SRCS	=	main.c \
+			init.c \
+			start_routines.c \
+			philo_routines.c \
 			utils.c \
-			init.c
+			arg_utils.c \
+			end.c
 
 OBJS	= $(SRCS:.c=.o)
 
