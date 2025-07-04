@@ -66,6 +66,14 @@ void *philo_routines(void *arg)
     set_last_meal_time(philo);
     if (philo->id % 2 != 0)
         usleep(200);
+    if (philo->data->number_of_philos == 1)
+    {
+        philo_take_forks(philo);
+        while (!check_sim_ended(philo->data))
+            usleep(100); 
+        pthread_mutex_unlock(&philo->data->forks[0]);
+        return NULL;
+    }
     while(!check_sim_ended(philo->data))
     {
         philo_take_forks(philo);

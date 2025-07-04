@@ -22,6 +22,12 @@ void philo_eat(t_philo *philo)
 
 void philo_take_forks(t_philo *philo)
 {
+    if(philo->data->number_of_philos == 1)
+    {
+	    pthread_mutex_lock(&(philo->data->forks[0]));
+	    print_status(philo, "has taken a fork");
+        return;        
+    }
 	pthread_mutex_lock(&(philo->data->forks[philo->l_fork]));
 	print_status(philo, "has taken a fork");
     if(check_sim_ended(philo->data))
@@ -29,14 +35,14 @@ void philo_take_forks(t_philo *philo)
 	    pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
         return;   
     }
-	pthread_mutex_lock(&(philo->data->forks[philo->r_fork]));
-	print_status(philo, "has taken a fork");
+    pthread_mutex_lock(&(philo->data->forks[philo->r_fork]));
+    print_status(philo, "has taken a fork");
     if(check_sim_ended(philo->data))
     {
-	    pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
-	    pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
+        pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
+        pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
         return;   
-    }
+    }        
 }
 
 void philo_sleep(t_philo *philo)
