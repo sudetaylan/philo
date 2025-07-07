@@ -20,6 +20,8 @@ int init_tdata(char **argv, t_data *data, int argc)
         data->number_of_eat = ft_atoi(argv[5]);
     else
         data->number_of_eat = -1;
+    if(data->number_of_eat == 0)
+        return 0;
     if(!init_fork_mutex(data))
         return 0;
     if(pthread_mutex_init(&data->is_ended_lock, NULL) != 0)
