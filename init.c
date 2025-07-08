@@ -16,11 +16,9 @@ int init_tdata(char **argv, t_data *data, int argc)
     data->time_to_die = ft_atoi(argv[2]);
     data->time_to_eat = ft_atoi(argv[3]);
     data->time_to_sleep = ft_atoi(argv[4]);
-    if(argc == 6 && ft_atoi(argv[5]) >= 0)
+    if(argc == 6 && ft_atoi(argv[5]) > 0)
         data->number_of_eat = ft_atoi(argv[5]);
-    else
-        data->number_of_eat = -1;
-    if(data->number_of_eat == 0)
+    else if(argc == 6 && ft_atoi(argv[5]) < 0)
         return 0;
     if(!init_fork_mutex(data))
         return 0;
