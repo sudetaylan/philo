@@ -45,6 +45,7 @@ void *monitor_philos(void *arg)
 
     philo = (t_philo *)arg;
     data = philo[0].data;
+    safe_usleep(data->time_to_eat / 2, data);
     while(!check_sim_ended(data))
     {
         if(check_philo_died(data, philo))
@@ -64,8 +65,6 @@ void *philo_routines(void *arg)
 
     philo = (t_philo *)arg;
     set_last_meal_time(philo);
-    if (philo->id % 2 != 0)
-        usleep(200);
     if (philo->data->number_of_philos == 1)
     {
         philo_take_forks(philo);

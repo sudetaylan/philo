@@ -10,7 +10,7 @@ OBJS	= $(SRCS:.c=.o)
 
 CC		= cc
 
-CFLAGS	= -g -Wall -Wextra -Werror -pthread
+CFLAGS	= -g -Wall -Wextra -Werror -pthread -fsanitize=thread
 
 NAME	= philo
 
