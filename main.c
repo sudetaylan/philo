@@ -11,8 +11,6 @@ int	main(int argc, char **argv)
 		return (1);
 	if (!init_tdata(argv, &data, argc))
 		return (1);
-	if (argc == 6 && data.number_of_eat == -1)
-		return (1);
 	if (!init_tphilo(&data, &philo))
 		return (1);
 	handle_threads(&data, philo);

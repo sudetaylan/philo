@@ -22,8 +22,8 @@ void	print_status(t_philo *philo, const char *msg)
 {
 	pthread_mutex_lock(&(philo->data->print_lock));
 	if (!check_sim_ended(philo->data))
-		printf("%lld %d %s\n", get_time_ms() - philo->phi_start_time,
-			philo->id, msg);
+		printf("%lld %d %s\n",
+			get_time_ms() - philo->phi_start_time, philo->id, msg);
 	pthread_mutex_unlock(&(philo->data->print_lock));
 }
 

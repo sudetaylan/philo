@@ -12,7 +12,7 @@ int	arg_control(char **argv)
 		while (argv[i][j])
 		{
 			if (argv[i][j] == '-' && j == 0)
-				return (0);
+				j++;
 			if (argv[i][j] <= '9' && argv[i][j] >= '0')
 				;
 			else
@@ -34,9 +34,13 @@ int	ft_atoi(const char *str)
 	while (*str == '\t' || *str == '\n' || *str == '\v'
 		|| *str == '\f' || *str == '\r' || *str == ' ')
 		str++;
-	if (*str == '+')
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign *= -1;
 		str++;
-	if (!(*str >= '0' && *str <= '9'))
+	}
+	if (*str == '-' || *str == '+')
 		return (-1);
 	while (*str >= '0' && *str <= '9')
 	{

@@ -2,6 +2,15 @@
 
 int	init_tdata(char **argv, t_data *data, int argc)
 {
+	int	i;
+
+	i = 1;
+	while (i < 5)
+	{
+		if (ft_atoi(argv[i]) <= 0)
+			return (0);
+		i++;
+	}
 	data->is_ended = 0;
 	data->number_of_philos = ft_atoi(argv[1]);
 	data->time_to_die = ft_atoi(argv[2]);
@@ -9,8 +18,8 @@ int	init_tdata(char **argv, t_data *data, int argc)
 	data->time_to_sleep = ft_atoi(argv[4]);
 	if (argc == 6 && ft_atoi(argv[5]) > 0)
 		data->number_of_eat = ft_atoi(argv[5]);
-	else
-		data->number_of_eat = -1;
+	else if (argc == 6 && ft_atoi(argv[5]) < 0)
+		return (0);
 	if (!init_fork_mutex(data))
 		return (0);
 	if (pthread_mutex_init(&data->is_ended_lock, NULL) != 0)
