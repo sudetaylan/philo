@@ -56,6 +56,7 @@ void	*monitor_philos(void *arg)
 			if (check_all_eaten(data, philo))
 				return (NULL);
 		}
+		usleep(500);
 	}
 	return (NULL);
 }
@@ -65,9 +66,6 @@ void	*philo_routines(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	set_last_meal_time(philo);
-	if (philo->id % 2 != 0)
-		usleep(200);
 	if (philo->data->number_of_philos == 1)
 	{
 		philo_take_forks(philo);

@@ -29,6 +29,6 @@ void	end_condition(t_data *data, t_philo *philo, const char *msg)
 	pthread_mutex_unlock(&philo->data->is_ended_lock);
 	pthread_mutex_lock(&data->print_lock);
 	printf("%lld %d %s\n",
-		get_time_ms() - philo->phi_start_time, philo->id, msg);
+		get_time_ms() - philo->data->start_time, philo->id, msg);
 	pthread_mutex_unlock(&(data->print_lock));
 }
