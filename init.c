@@ -71,7 +71,7 @@ int	init_tphilo(t_data *data, t_philo **philo)
 		pthread_mutex_init(&(*philo)[i].meal_lock, NULL);
 		(*philo)[i].id = i + 1;
 		(*philo)[i].meals_eaten = 0;
-		(*philo)[i].last_meal_time = get_time_ms();
+		(*philo)[i].last_meal_time = 0;
 		(*philo)[i].data = data;
 		(*philo)[i].phi_start_time = get_time_ms();
 		(*philo)[i].l_fork = i;
@@ -88,20 +88,14 @@ void	handle_threads(t_data *data, t_philo *philo)
 
 	i = -1;
 	data->start_time = get_time_ms();
-	while(++i < data->number_of_philos)
+	while (++i < data->number_of_philos)
 		philo[i].last_meal_time = data->start_time;
-	i = 0;
-	while (i < data->number_of_philos)
-	{
+	i = -1;
+	while (++i < data->number_of_philos)
 		pthread_create(&philo[i].thread, NULL, philo_routines, &philo[i]);
-		i++;
-	}
 	pthread_create(&monitoring, NULL, monitor_philos, philo);
-	i = 0;
-	while (i < data->number_of_philos)
-	{
+	i = -1;
+	while (++i < data->number_of_philos)
 		pthread_join(philo[i].thread, NULL);
-		i++;
-	}
 	pthread_join(monitoring, NULL);
 }

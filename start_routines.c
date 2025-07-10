@@ -56,7 +56,6 @@ void	*monitor_philos(void *arg)
 			if (check_all_eaten(data, philo))
 				return (NULL);
 		}
-		usleep(500);
 	}
 	return (NULL);
 }
@@ -66,14 +65,8 @@ void	*philo_routines(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	if (philo->data->number_of_philos == 1)
-	{
-		philo_take_forks(philo);
-		while (!check_sim_ended(philo->data))
-			usleep(100);
-		pthread_mutex_unlock(&philo->data->forks[0]);
-		return (NULL);
-	}
+	if (philo->id % 2 != 0)
+		usleep(200);
 	while (!check_sim_ended(philo->data))
 	{
 		philo_take_forks(philo);

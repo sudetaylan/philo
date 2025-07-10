@@ -27,32 +27,19 @@ void	philo_take_forks(t_philo *philo)
 	{
 		pthread_mutex_lock(&(philo->data->forks[0]));
 		print_status(philo, "has taken a fork");
+		safe_usleep(philo->data->time_to_die, philo->data);
+		pthread_mutex_unlock(&(philo->data->forks[0]));
 		return ;
 	}
-	if (philo->id % 2 == 0)
+	pthread_mutex_lock(&(philo->data->forks[philo->l_fork]));
+	print_status(philo, "has taken a fork");
+	if (check_sim_ended(philo->data))
 	{
-		pthread_mutex_lock(&(philo->data->forks[philo->r_fork]));
-		print_status(philo, "has taken a fork");
-		if (check_sim_ended(philo->data))
-		{
-			pthread_mutex_unlock(&(philo->data->forks[philo->r_fork]));
-			return ;
-		}
-		pthread_mutex_lock(&(philo->data->forks[philo->l_fork]));
-		print_status(philo, "has taken a fork");
+		pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
+		return ;
 	}
-	else
-	{
-		pthread_mutex_lock(&(philo->data->forks[philo->l_fork]));
-		print_status(philo, "has taken a fork");
-		if (check_sim_ended(philo->data))
-		{
-			pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
-			return ;
-		}
-		pthread_mutex_lock(&(philo->data->forks[philo->r_fork]));
-		print_status(philo, "has taken a fork");
-	}
+	pthread_mutex_lock(&(philo->data->forks[philo->r_fork]));
+	print_status(philo, "has taken a fork");
 	if (check_sim_ended(philo->data))
 	{
 		pthread_mutex_unlock(&(philo->data->forks[philo->l_fork]));
