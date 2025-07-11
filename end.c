@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   end.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: staylan <staylan@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 17:56:45 by staylan           #+#    #+#             */
+/*   Updated: 2025/07/11 17:56:52 by staylan          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 void	destroy_mutex(t_data *data, t_philo *philo)
@@ -29,6 +41,6 @@ void	end_condition(t_data *data, t_philo *philo, const char *msg)
 	pthread_mutex_unlock(&philo->data->is_ended_lock);
 	pthread_mutex_lock(&data->print_lock);
 	printf("%lld %d %s\n",
-		get_time_ms() - philo->phi_start_time, philo->id, msg);
+		get_time_ms() - philo->data->start_time, philo->id, msg);
 	pthread_mutex_unlock(&(data->print_lock));
 }

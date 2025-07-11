@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: staylan <staylan@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 17:57:25 by staylan           #+#    #+#             */
+/*   Updated: 2025/07/11 18:08:45 by staylan          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 
@@ -49,7 +61,7 @@ int			init_fork_mutex(t_data *data);
 int			init_tphilo(t_data *data, t_philo **philo);
 void		philo_think(t_philo *philo);
 void		philo_eat(t_philo *philo);
-void		philo_take_forks(t_philo *philo);
+void		handle_fork_taking(t_philo *philo);
 void		philo_sleep(t_philo *philo);
 void		*monitor_philos(void *arg);
 void		safe_usleep(long long duration_ms, t_data *data);
@@ -57,5 +69,6 @@ int			check_sim_ended(t_data *data);
 void		set_last_meal_time(t_philo *philo);
 void		handle_threads(t_data *data, t_philo *philo);
 void		destroy_mutex(t_data *data, t_philo *philo);
+long long	get_last_meal_time(t_philo *philo);
 
 #endif

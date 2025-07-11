@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   start_routines.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: staylan <staylan@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 17:57:35 by staylan           #+#    #+#             */
+/*   Updated: 2025/07/11 18:10:38 by staylan          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 static int	check_philo_died(t_data *data, t_philo *philo)
@@ -7,14 +19,11 @@ static int	check_philo_died(t_data *data, t_philo *philo)
 	i = 0;
 	while (i < data->number_of_philos)
 	{
-		pthread_mutex_lock(&philo[i].meal_lock);
-		if (get_time_ms() - philo[i].last_meal_time >= data->time_to_die)
+		if (get_time_ms() - get_last_meal_time(&philo[i]) > data->time_to_die)
 		{
 			end_condition(data, &philo[i], "died");
-			pthread_mutex_unlock(&philo[i].meal_lock);
 			return (1);
 		}
-		pthread_mutex_unlock(&philo[i].meal_lock);
 		i++;
 	}
 	return (0);
@@ -56,6 +65,7 @@ void	*monitor_philos(void *arg)
 			if (check_all_eaten(data, philo))
 				return (NULL);
 		}
+		usleep(1000);
 	}
 	return (NULL);
 }
@@ -65,11 +75,17 @@ void	*philo_routines(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	if (philo->id % 2 != 0)
-		usleep(200);
+	if (philo->data->number_of_philos == 1)
+	{
+		handle_fork_taking(philo);
+		while (!check_sim_ended(philo->data))
+			usleep(100);
+		pthread_mutex_unlock(&philo->data->forks[0]);
+		return (NULL);
+	}
 	while (!check_sim_ended(philo->data))
 	{
-		philo_take_forks(philo);
+		handle_fork_taking(philo);
 		philo_eat(philo);
 		philo_sleep(philo);
 		philo_think(philo);

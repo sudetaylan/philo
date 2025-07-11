@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: staylan <staylan@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 17:58:16 by staylan           #+#    #+#             */
+/*   Updated: 2025/07/11 18:02:20 by staylan          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	init_tdata(char **argv, t_data *data, int argc)
@@ -20,6 +32,8 @@ int	init_tdata(char **argv, t_data *data, int argc)
 		data->number_of_eat = ft_atoi(argv[5]);
 	else if (argc == 6 && ft_atoi(argv[5]) < 0)
 		return (0);
+	else
+		data->number_of_eat = -1;
 	if (!init_fork_mutex(data))
 		return (0);
 	if (pthread_mutex_init(&data->is_ended_lock, NULL) != 0)
@@ -70,10 +84,12 @@ int	init_tphilo(t_data *data, t_philo **philo)
 	{
 		pthread_mutex_init(&(*philo)[i].meal_lock, NULL);
 		(*philo)[i].id = i + 1;
-		(*philo)[i].meals_eaten = 0;
-		(*philo)[i].last_meal_time = 0;
 		(*philo)[i].data = data;
+		(*philo)[i].meals_eaten = 0;
+		pthread_mutex_lock(&((*philo)[i].meal_lock));
+		(*philo)[i].last_meal_time = get_time_ms();
 		(*philo)[i].phi_start_time = get_time_ms();
+		pthread_mutex_unlock(&((*philo)[i].meal_lock));
 		(*philo)[i].l_fork = i;
 		(*philo)[i].r_fork = (i + 1) % data->number_of_philos;
 		i++;
@@ -89,13 +105,21 @@ void	handle_threads(t_data *data, t_philo *philo)
 	i = -1;
 	data->start_time = get_time_ms();
 	while (++i < data->number_of_philos)
+	{
+		pthread_mutex_lock(&philo[i].meal_lock);
+		philo[i].phi_start_time = data->start_time;
 		philo[i].last_meal_time = data->start_time;
+		pthread_mutex_unlock(&philo[i].meal_lock);
+	}
 	i = -1;
 	while (++i < data->number_of_philos)
 		pthread_create(&philo[i].thread, NULL, philo_routines, &philo[i]);
 	pthread_create(&monitoring, NULL, monitor_philos, philo);
-	i = -1;
-	while (++i < data->number_of_philos)
+	i = 0;
+	while (i < data->number_of_philos)
+	{
 		pthread_join(philo[i].thread, NULL);
+		i++;
+	}
 	pthread_join(monitoring, NULL);
 }
